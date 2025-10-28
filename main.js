@@ -11,7 +11,7 @@ title.style.color = 'green';
 title.style.marginBottom = '20px';
 body.appendChild(title);
 
-
+// Форма для создания
 const form = document.createElement('form');
 form.style.display = 'flex';
 form.style.gap = '10px';
@@ -39,7 +39,7 @@ form.appendChild(addBtn);
 
 body.appendChild(form);
 
-
+// Панель фильтров и поиска
 const controls = document.createElement('div');
 controls.style.display = 'flex';
 controls.style.gap = '10px';
@@ -54,7 +54,8 @@ const filterSelect = document.createElement('select');
 });
 controls.appendChild(filterSelect);
 
-let sortDirection = 'old'; 
+// Кнопка сортировки
+let sortDirection = 'old';
 const sortBtn = document.createElement('button');
 sortBtn.textContent = 'Сначала старые';
 sortBtn.style.backgroundColor = 'green';
@@ -64,6 +65,7 @@ sortBtn.style.padding = '8px 15px';
 sortBtn.style.cursor = 'pointer';
 controls.appendChild(sortBtn);
 
+// Поле поиска
 const searchInput = document.createElement('input');
 searchInput.type = 'search';
 searchInput.placeholder = 'Поиск по названию';
@@ -72,13 +74,18 @@ controls.appendChild(searchInput);
 
 body.appendChild(controls);
 
-
+// Список задач
 const taskList = document.createElement('ul');
 taskList.style.listStyle = 'none';
 taskList.style.padding = '0';
 body.appendChild(taskList);
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
 
 
 function renderTasks() {
@@ -128,14 +135,13 @@ function renderTasks() {
       text.style.color = 'gray';
     }
     left.appendChild(text);
-
     li.appendChild(left);
 
     const buttons = document.createElement('div');
     buttons.style.display = 'flex';
     buttons.style.gap = '5px';
 
-
+    // Редактирование задачи
     const editBtn = document.createElement('button');
     editBtn.textContent = '✏️';
     editBtn.style.cursor = 'pointer';
@@ -165,4 +171,106 @@ function renderTasks() {
       li.appendChild(editWrap);
 
       saveBtn.addEventListener('click', () => {
-        const new
+        const newText = editText.value.trim();
+        if (newText) {
+          task.text = newText;
+          task.date = editDate.value;
+          saveTasks();
+          renderTasks();
+        }
+      });
+
+      cancelBtn.addEventListener('click', () => renderTasks());
+    });
+    buttons.appendChild(editBtn);
+
+    // Удаление задачи
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '🗑️';
+    deleteBtn.style.cursor = 'pointer';
+    deleteBtn.addEventListener('click', () => {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    });
+    buttons.appendChild(deleteBtn);
+
+    li.appendChild(buttons);
+    taskList.appendChild(li);
+
+    // Drag drop
+    li.addEventListener('dragstart', () => li.classList.add('dragging'));
+    li.addEventListener('dragend', () => {
+      li.classList.remove('dragging');
+      const newOrder = [...taskList.children].map(el => tasks[el.dataset.index]);
+      tasks = newOrder;
+      saveTasks();
+      renderTasks();
+    });
+  });
+}
+
+// Добавление задачи
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const text = inputText.value.trim();
+  const date = inputDate.value;
+  if (!text) return;
+
+  tasks.push({
+    text,
+    date,
+    done: false
+  });
+  inputText.value = '';
+  inputDate.value = '';
+  saveTasks();
+  renderTasks();
+});
+
+// Сортировка по дате
+sortBtn.addEventListener('click', () => {
+  if (sortDirection === 'old') {
+    sortDirection = 'new';
+    sortBtn.textContent = 'Сначала новые';
+    tasks.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  } else {
+    sortDirection = 'old';
+    sortBtn.textContent = 'Сначала старые';
+    tasks.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+  }
+  saveTasks();
+  renderTasks();
+});
+
+// Фильтрация и поиск
+filterSelect.addEventListener('change', renderTasks);
+searchInput.addEventListener('input', renderTasks);
+
+// Поддержка drag-and-drop
+taskList.addEventListener('dragover', e => {
+  e.preventDefault();
+  const dragging = document.querySelector('.dragging');
+  const afterElement = getDragAfterElement(taskList, e.clientY);
+  if (afterElement == null) {
+    taskList.appendChild(dragging);
+  } else {
+    taskList.insertBefore(dragging, afterElement);
+  }
+});
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+
+renderTasks();
