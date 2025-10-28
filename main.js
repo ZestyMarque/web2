@@ -1,4 +1,3 @@
-
 const body = document.body;
 body.style.backgroundColor = 'white';
 body.style.fontFamily = 'Arial, sans-serif';
@@ -55,8 +54,9 @@ const filterSelect = document.createElement('select');
 });
 controls.appendChild(filterSelect);
 
+let sortDirection = 'old'; 
 const sortBtn = document.createElement('button');
-sortBtn.textContent = 'Сортировать по дате';
+sortBtn.textContent = 'Сначала старые';
 sortBtn.style.backgroundColor = 'green';
 sortBtn.style.color = 'white';
 sortBtn.style.border = 'none';
@@ -135,12 +135,11 @@ function renderTasks() {
     buttons.style.display = 'flex';
     buttons.style.gap = '5px';
 
-    // Редактирование задачи прямо на странице
+
     const editBtn = document.createElement('button');
     editBtn.textContent = '✏️';
     editBtn.style.cursor = 'pointer';
     editBtn.addEventListener('click', () => {
-      // Создаём поля для редактирования
       const editText = document.createElement('input');
       editText.type = 'text';
       editText.value = task.text;
@@ -157,7 +156,6 @@ function renderTasks() {
       cancelBtn.textContent = '❌';
       cancelBtn.style.cursor = 'pointer';
 
-
       li.innerHTML = '';
       const editWrap = document.createElement('div');
       editWrap.style.display = 'flex';
@@ -166,87 +164,5 @@ function renderTasks() {
       editWrap.append(editText, editDate, saveBtn, cancelBtn);
       li.appendChild(editWrap);
 
-
       saveBtn.addEventListener('click', () => {
-        const newText = editText.value.trim();
-        if (newText) {
-          task.text = newText;
-          task.date = editDate.value;
-          saveTasks();
-          renderTasks();
-        }
-      });
-
-
-      cancelBtn.addEventListener('click', renderTasks);
-    });
-    buttons.appendChild(editBtn);
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '🗑️';
-    deleteBtn.style.cursor = 'pointer';
-    deleteBtn.addEventListener('click', () => {
-      tasks.splice(index, 1);
-      saveTasks();
-      renderTasks();
-    });
-    buttons.appendChild(deleteBtn);
-
-    li.appendChild(buttons);
-
-    li.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', index);
-      li.style.opacity = '0.5';
-    });
-    li.addEventListener('dragend', () => li.style.opacity = '1');
-    li.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      li.style.backgroundColor = '#f0fff0';
-    });
-    li.addEventListener('dragleave', () => li.style.backgroundColor = '');
-    li.addEventListener('drop', (e) => {
-      e.preventDefault();
-      li.style.backgroundColor = '';
-      const from = e.dataTransfer.getData('text/plain');
-      const to = index;
-      const moved = tasks.splice(from, 1)[0];
-      tasks.splice(to, 0, moved);
-      saveTasks();
-      renderTasks();
-    });
-
-    taskList.appendChild(li);
-  });
-}
-
-function saveTasks() {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-}
-
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const text = inputText.value.trim();
-  const date = inputDate.value;
-  if (!text) return;
-
-  const newTask = { text, date, done: false };
-  tasks.push(newTask);
-  saveTasks();
-  renderTasks();
-  form.reset();
-});
-
-sortBtn.addEventListener('click', () => {
-  tasks.sort((a, b) => {
-    const da = a.date ? new Date(a.date) : new Date(0);
-    const db = b.date ? new Date(b.date) : new Date(0);
-    return da - db;
-  });
-  saveTasks();
-  renderTasks();
-});
-
-filterSelect.addEventListener('change', renderTasks);
-searchInput.addEventListener('input', renderTasks);
-
-renderTasks();
+        const new
