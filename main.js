@@ -1,49 +1,57 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const body = document.body;
-    body.style.backgroundColor = 'white';
-    body.style.fontFamily = 'Arial, sans-serif';
+    const header = document.createElement('header');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    header.style.padding = '20px';
+    header.style.backgroundColor = '#fff';
+    header.style.borderBottom = '2px solid #2e8b57';
 
     const title = document.createElement('h1');
     title.textContent = 'ToDoList';
     title.style.color = '#2e8b57';
-    title.style.margin = '20px';
-    body.appendChild(title);
+    title.style.margin = '0';
 
-    const container = document.createElement('div');
-    container.style.maxWidth = '600px';
-    container.style.margin = '0 auto';
-    body.appendChild(container);
+    header.appendChild(title);
+    document.body.appendChild(header);
+
+    const main = document.createElement('main');
+    main.style.padding = '20px';
+    document.body.appendChild(main);
 
     const form = document.createElement('form');
     form.style.display = 'flex';
     form.style.gap = '10px';
     form.style.marginBottom = '20px';
+    form.style.flexWrap = 'wrap';
 
-    const inputText = document.createElement('input');
-    inputText.type = 'text';
-    inputText.placeholder = 'Введите задачу';
-    inputText.required = true;
+    const taskInput = document.createElement('input');
+    taskInput.type = 'text';
+    taskInput.placeholder = 'Введите задачу';
+    taskInput.required = true;
+    taskInput.style.flex = '1';
 
-    const inputDate = document.createElement('input');
-    inputDate.type = 'date';
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
 
-    const addBtn = document.createElement('button');
-    addBtn.textContent = 'Создать задачу';
-    addBtn.style.backgroundColor = '#2e8b57';
-    addBtn.style.color = 'white';
-    addBtn.style.border = 'none';
-    addBtn.style.padding = '5px 10px';
-    addBtn.style.borderRadius = '5px';
-    addBtn.style.cursor = 'pointer';
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Создать задачу';
+    addButton.style.backgroundColor = '#2e8b57';
+    addButton.style.color = 'white';
+    addButton.style.border = 'none';
+    addButton.style.padding = '10px 15px';
+    addButton.style.borderRadius = '6px';
+    addButton.style.cursor = 'pointer';
 
-    form.append(inputText, inputDate, addBtn);
-    container.appendChild(form);
+    form.append(taskInput, dateInput, addButton);
+    main.appendChild(form);
 
-    // фильтрация и сортировка
+
     const controls = document.createElement('div');
     controls.style.display = 'flex';
-    controls.style.justifyContent = 'space-between';
-    controls.style.marginBottom = '10px';
+    controls.style.flexWrap = 'wrap';
+    controls.style.gap = '10px';
+    controls.style.marginBottom = '20px';
 
     const filterSelect = document.createElement('select');
     filterSelect.innerHTML = `
@@ -51,30 +59,35 @@ document.addEventListener('DOMContentLoaded', () => {
         <option value="done">Выполненные</option>
         <option value="undone">Невыполненные</option>
     `;
+    filterSelect.style.padding = '8px';
 
-    const sortBtn = document.createElement('button');
-    sortBtn.textContent = 'Сначала срочные';
-    sortBtn.style.backgroundColor = '#2e8b57';
-    sortBtn.style.color = 'white';
-    sortBtn.style.border = 'none';
-    sortBtn.style.padding = '5px 10px';
-    sortBtn.style.borderRadius = '5px';
-    sortBtn.style.cursor = 'pointer';
+    const sortButton = document.createElement('button');
+    sortButton.textContent = 'Сначала срочные';
+    sortButton.style.backgroundColor = '#2e8b57';
+    sortButton.style.color = 'white';
+    sortButton.style.border = 'none';
+    sortButton.style.padding = '8px 12px';
+    sortButton.style.borderRadius = '6px';
+    sortButton.style.cursor = 'pointer';
 
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.placeholder = 'Поиск по названию';
+    searchInput.style.flex = '1';
+    searchInput.style.padding = '8px';
 
-    controls.append(filterSelect, sortBtn, searchInput);
-    container.appendChild(controls);
+    controls.append(filterSelect, sortButton, searchInput);
+    main.appendChild(controls);
 
-    const list = document.createElement('ul');
-    list.style.listStyle = 'none';
-    list.style.padding = '0';
-    container.appendChild(list);
+    // Список задач
+    const taskList = document.createElement('ul');
+    taskList.style.listStyle = 'none';
+    taskList.style.padding = '0';
+    taskList.style.margin = '0';
+    main.appendChild(taskList);
 
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    let sortMode = 'urgent'; 
+    let sortMode = 'urgent';
 
     function saveTasks() {
         localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -83,14 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function createTaskItem(task) {
         const li = document.createElement('li');
         li.draggable = true;
+        li.style.display = 'flex';
+        li.style.justifyContent = 'space-between';
+        li.style.alignItems = 'center';
+        li.style.padding = '10px';
+        li.style.marginBottom = '8px';
         li.style.border = '1px solid #ccc';
         li.style.borderRadius = '8px';
-        li.style.padding = '10px';
-        li.style.marginBottom = '10px';
-        li.style.display = 'flex';
-        li.style.alignItems = 'center';
-        li.style.justifyContent = 'space-between';
-        li.style.gap = '10px';
         li.dataset.id = task.id;
 
         const left = document.createElement('div');
@@ -98,28 +110,30 @@ document.addEventListener('DOMContentLoaded', () => {
         left.style.alignItems = 'center';
         left.style.gap = '10px';
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = task.done;
-        checkbox.addEventListener('change', () => {
-            task.done = checkbox.checked;
-            saveTasks();
-            renderTasks();
-        });
+        const check = document.createElement('input');
+        check.type = 'checkbox';
+        check.checked = task.done;
 
         const text = document.createElement('span');
         text.textContent = task.text;
+
+        const date = document.createElement('span');
+        date.textContent = task.date || 'Без срока';
+        date.style.color = '#555';
+        date.style.fontSize = '0.9em';
+
         if (task.done) {
             text.style.textDecoration = 'line-through';
             text.style.color = 'gray';
         }
 
-        const date = document.createElement('span');
-        date.textContent = task.date || 'Без срока';
-        date.style.fontSize = '0.9em';
-        date.style.color = '#555';
+        check.addEventListener('change', () => {
+            task.done = check.checked;
+            saveTasks();
+            renderTasks();
+        });
 
-        left.append(checkbox, text, date);
+        left.append(check, text, date);
 
         const right = document.createElement('div');
         right.style.display = 'flex';
@@ -127,8 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const editBtn = document.createElement('button');
         editBtn.textContent = '✏️';
+        editBtn.style.cursor = 'pointer';
+
         const delBtn = document.createElement('button');
         delBtn.textContent = '🗑️';
+        delBtn.style.cursor = 'pointer';
 
         delBtn.addEventListener('click', () => {
             tasks = tasks.filter(t => t.id !== task.id);
@@ -136,8 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTasks();
         });
 
+        // редактирование
         editBtn.addEventListener('click', () => {
-            if (li.querySelector('input[type="text"]')) return; // уже редактируется
+            if (li.querySelector('input[type="text"]')) return;
 
             const editText = document.createElement('input');
             editText.type = 'text';
@@ -154,8 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cancelBtn.textContent = '❌';
 
             left.innerHTML = '';
-            left.append(checkbox, editText, editDate);
-
+            left.append(check, editText, editDate);
             right.innerHTML = '';
             right.append(saveBtn, cancelBtn);
 
@@ -172,14 +189,11 @@ document.addEventListener('DOMContentLoaded', () => {
         right.append(editBtn, delBtn);
         li.append(left, right);
 
+
         li.addEventListener('dragstart', e => {
             e.dataTransfer.setData('id', task.id);
         });
-
-        li.addEventListener('dragover', e => {
-            e.preventDefault();
-        });
-
+        li.addEventListener('dragover', e => e.preventDefault());
         li.addEventListener('drop', e => {
             const fromId = e.dataTransfer.getData('id');
             const fromIndex = tasks.findIndex(t => t.id === fromId);
@@ -194,17 +208,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderTasks() {
-        list.innerHTML = '';
+        taskList.innerHTML = '';
 
-        let filtered = tasks.filter(task => {
-            if (filterSelect.value === 'done') return task.done;
-            if (filterSelect.value === 'undone') return !task.done;
+        let filtered = tasks.filter(t => {
+            if (filterSelect.value === 'done') return t.done;
+            if (filterSelect.value === 'undone') return !t.done;
             return true;
         });
 
-        if (searchInput.value.trim() !== '') {
-            filtered = filtered.filter(task =>
-                task.text.toLowerCase().includes(searchInput.value.toLowerCase())
+        if (searchInput.value.trim()) {
+            filtered = filtered.filter(t =>
+                t.text.toLowerCase().includes(searchInput.value.toLowerCase())
             );
         }
 
@@ -225,15 +239,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        filtered.forEach(task => list.appendChild(createTaskItem(task)));
+        filtered.forEach(task => taskList.appendChild(createTaskItem(task)));
     }
 
     form.addEventListener('submit', e => {
         e.preventDefault();
         const newTask = {
             id: Date.now().toString(),
-            text: inputText.value.trim(),
-            date: inputDate.value,
+            text: taskInput.value.trim(),
+            date: dateInput.value,
             done: false
         };
         tasks.push(newTask);
@@ -242,19 +256,19 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTasks();
     });
 
-    filterSelect.addEventListener('change', renderTasks);
-    searchInput.addEventListener('input', renderTasks);
-
-    sortBtn.addEventListener('click', () => {
+    sortButton.addEventListener('click', () => {
         if (sortMode === 'urgent') {
             sortMode = 'delayed';
-            sortBtn.textContent = 'Сначала отложенные';
+            sortButton.textContent = 'Сначала отложенные';
         } else {
             sortMode = 'urgent';
-            sortBtn.textContent = 'Сначала срочные';
+            sortButton.textContent = 'Сначала срочные';
         }
         renderTasks();
     });
+
+    filterSelect.addEventListener('change', renderTasks);
+    searchInput.addEventListener('input', renderTasks);
 
     renderTasks();
 });
