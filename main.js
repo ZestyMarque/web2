@@ -14,21 +14,14 @@ header.style.textAlign = "left";
 body.appendChild(header);
 
 const container = document.createElement("div");
-container.className = "container";
 container.style.maxWidth = "900px";
 container.style.margin = "0 auto";
 container.style.padding = "20px";
 body.appendChild(container);
 
-const controls = document.createElement("div");
-controls.style.display = "flex";
-controls.style.flexWrap = "wrap";
-controls.style.gap = "10px";
-controls.style.marginBottom = "15px";
-container.appendChild(controls);
-
 const form = document.createElement("form");
 form.style.display = "flex";
+form.style.flexWrap = "wrap";
 form.style.gap = "10px";
 form.style.marginBottom = "20px";
 container.appendChild(form);
@@ -51,12 +44,19 @@ const addButton = document.createElement("button");
 addButton.type = "submit";
 addButton.textContent = "Создать задачу";
 addButton.style.backgroundColor = "#2e7d32";
-addButton.style.color = "#fff";
+addButton.style.color = "white";
 addButton.style.border = "none";
 addButton.style.padding = "8px 12px";
 addButton.style.cursor = "pointer";
 addButton.style.borderRadius = "5px";
 form.appendChild(addButton);
+
+const controls = document.createElement("div");
+controls.style.display = "flex";
+controls.style.flexWrap = "wrap";
+controls.style.gap = "10px";
+controls.style.marginBottom = "15px";
+container.appendChild(controls);
 
 // Поле для поиска
 const searchInput = document.createElement("input");
@@ -84,6 +84,7 @@ sortSelect.innerHTML = `
 `;
 sortSelect.style.padding = "8px";
 controls.appendChild(sortSelect);
+
 
 const taskList = document.createElement("ul");
 taskList.style.listStyle = "none";
@@ -172,9 +173,11 @@ function createTaskItem(task) {
     newTextInput.type = "text";
     newTextInput.value = task.text;
     newTextInput.style.flex = "1";
+
     const newDateInput = document.createElement("input");
     newDateInput.type = "date";
     newDateInput.value = task.date || "";
+
     left.replaceChildren(checkbox, newTextInput, newDateInput);
 
     const saveBtn = document.createElement("button");
@@ -192,7 +195,6 @@ function createTaskItem(task) {
     });
   });
 
- 
   li.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("text/plain", task.id);
     e.dataTransfer.effectAllowed = "move";
@@ -234,16 +236,16 @@ function renderTasks() {
   });
 
   if (searchInput.value.trim()) {
-    filtered = filtered.filter(t => t.text.toLowerCase().includes(searchInput.value.toLowerCase()));
+    filtered = filtered.filter(t =>
+      t.text.toLowerCase().includes(searchInput.value.toLowerCase())
+    );
   }
 
-  // сортировка
   filtered.sort((a, b) => {
     const aDate = a.date ? new Date(a.date) : null;
     const bDate = b.date ? new Date(b.date) : null;
 
     if (sortSelect.value === "urgent") {
-      // Сначала срочные — без даты в конце
       if (!aDate && bDate) return 1;
       if (aDate && !bDate) return -1;
       if (!aDate && !bDate) return 0;
@@ -277,8 +279,10 @@ form.addEventListener("submit", (e) => {
   renderTasks();
 });
 
+
 [filterSelect, sortSelect, searchInput].forEach(el =>
   el.addEventListener("input", renderTasks)
 );
+
 
 renderTasks();
