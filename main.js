@@ -27,33 +27,6 @@ controls.style.gap = "10px";
 controls.style.marginBottom = "15px";
 container.appendChild(controls);
 
-// Поле для поиска
-const searchInput = document.createElement("input");
-searchInput.type = "text";
-searchInput.placeholder = "Поиск по названию...";
-searchInput.style.flex = "1";
-searchInput.style.padding = "8px";
-controls.appendChild(searchInput);
-
-// Фильтр по статусу
-const filterSelect = document.createElement("select");
-filterSelect.innerHTML = `
-  <option value="all">Все задачи</option>
-  <option value="done">Выполненные</option>
-  <option value="notdone">Невыполненные</option>
-`;
-filterSelect.style.padding = "8px";
-controls.appendChild(filterSelect);
-
-// Сортировка по дате
-const sortSelect = document.createElement("select");
-sortSelect.innerHTML = `
-  <option value="urgent">Сначала срочные</option>
-  <option value="delayed">Сначала отложенные</option>
-`;
-sortSelect.style.padding = "8px";
-controls.appendChild(sortSelect);
-
 const form = document.createElement("form");
 form.style.display = "flex";
 form.style.gap = "10px";
@@ -84,6 +57,33 @@ addButton.style.padding = "8px 12px";
 addButton.style.cursor = "pointer";
 addButton.style.borderRadius = "5px";
 form.appendChild(addButton);
+
+// Поле для поиска
+const searchInput = document.createElement("input");
+searchInput.type = "text";
+searchInput.placeholder = "Поиск по названию...";
+searchInput.style.flex = "1";
+searchInput.style.padding = "8px";
+controls.appendChild(searchInput);
+
+// Фильтр по статусу
+const filterSelect = document.createElement("select");
+filterSelect.innerHTML = `
+  <option value="all">Все задачи</option>
+  <option value="done">Выполненные</option>
+  <option value="notdone">Невыполненные</option>
+`;
+filterSelect.style.padding = "8px";
+controls.appendChild(filterSelect);
+
+// Сортировка по дате
+const sortSelect = document.createElement("select");
+sortSelect.innerHTML = `
+  <option value="urgent">Сначала срочные</option>
+  <option value="delayed">Сначала отложенные</option>
+`;
+sortSelect.style.padding = "8px";
+controls.appendChild(sortSelect);
 
 const taskList = document.createElement("ul");
 taskList.style.listStyle = "none";
