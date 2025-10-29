@@ -232,11 +232,11 @@ form.addEventListener('submit', e => {
 sortBtn.addEventListener('click', () => {
   if (sortDirection === 'old') {
     sortDirection = 'new';
-    sortBtn.textContent = 'Сначала новые';
+    sortBtn.textContent = 'Сначала отложенные';
     tasks.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
   } else {
     sortDirection = 'old';
-    sortBtn.textContent = 'Сначала старые';
+    sortBtn.textContent = 'Сначала срочные';
     tasks.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
   }
   saveTasks();
